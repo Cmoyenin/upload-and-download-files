@@ -39,7 +39,7 @@ require_once ('connexion.php');
 <?php
 uploadFiles();
 
-
+require ('delete.php');
 
 ?>
 
