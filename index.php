@@ -30,7 +30,7 @@ require_once ('connexion.php');
 
 
 <form action="" method="POST" enctype="multipart/form-data">
-<input type="file" name="fileToUpload">
+<input type="file" name="fileToUpload" multiple='multiple'>
 <input type="submit">
 </form>
 

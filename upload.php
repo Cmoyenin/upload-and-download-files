@@ -1,28 +1,39 @@
 <?php 
 require_once 'connexion.php';
 
-INSERT INTO `uploaded_files` (`file_path`, `client_id`) VALUES ( 'mouette/mouette.txt', '$last_id_client');
 
 function uploadFiles(){
 
     if (isset($_FILES["fileToUpload"])){
-        $target_dir = './upload/' ; 
-        $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);  
-        move_uploaded_file($_FILES['fileToUpload']['tmp_name'], $target_file);
         
+        
+        $filename_uploaded = explode('.', basename($_FILES["fileToUpload"]["name"])) ;
+        $filename_tmp = basename($_FILES["fileToUpload"]["tmp_name"] .'.'.$filename_uploaded[1]);
+
+        $target_dir = './upload/' ; 
+        //$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);  
+        $target_file = $target_dir . $filename_tmp;  
+
+        move_uploaded_file($_FILES['fileToUpload']['tmp_name'], $target_file);
+
+        $file_nom=$_FILES['fileToUpload']['name'];
+        $tmp_name=$_FILES['fileToUpload']['tmp_name'];
+        
+        $stmt = connectionBase()->prepare("INSERT INTO `uploaded_files` (`file_nom` , `tmp_name`) VALUES ( :file_nom , :tmp_name);");
+        $stmt->bindParam(':file_nom', $file_nom);
+        $stmt->bindParam(':tmp_name', $tmp_name);
+        $stmt->execute();
 
 
-        $file_path=$target_file;
+/*
+faudrait que lorsque je click sur le lien, je reconvertisse le fichier en "vrai" nom
+*/
 
-$stmt = connectionBase()->prepare("INSERT INTO `uploaded_files` (`file_path`) VALUES ( :file_path);");
+
+        $file_to_download = ('<a href="upload/' . $filename_tmp . '" download="' . $file_nom .'">' . $_FILES["fileToUpload"]["name"] . '</a>');
+        echo($file_to_download);
 
 
-
-$stmt->bindParam(':file_path', $file_path);
-
-$stmt->execute();
-
-$file_to_download = ('<a href="' . $file_path . '" download>' . base64_encode($file_path) . '</a>');
     }
 }
 
